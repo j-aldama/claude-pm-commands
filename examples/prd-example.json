@@ -1,0 +1,54 @@
+{
+  "project": "My Web App",
+  "identifier": "MYAPP",
+  "description": "Web application for task management with team collaboration features",
+  "userStories": [
+    {
+      "id": "MYAPP-001",
+      "title": "User registration with email",
+      "description": "Users can create an account using their email address and a password",
+      "acceptanceCriteria": [
+        "User can register with email and password",
+        "Email validation is enforced",
+        "Password must meet security requirements",
+        "Confirmation email is sent after registration"
+      ],
+      "storyPoints": 3,
+      "priority": 2,
+      "domain": "backend",
+      "passes": false,
+      "dependencies": []
+    },
+    {
+      "id": "MYAPP-002",
+      "title": "Task creation and assignment",
+      "description": "Users can create tasks and assign them to team members",
+      "acceptanceCriteria": [
+        "User can create a task with title and description",
+        "User can assign a task to a team member",
+        "Task has priority levels: low, medium, high",
+        "Task has due date field"
+      ],
+      "storyPoints": 5,
+      "priority": 1,
+      "domain": "frontend",
+      "passes": false,
+      "dependencies": ["MYAPP-001"]
+    },
+    {
+      "id": "MYAPP-003",
+      "title": "Notification service",
+      "description": "Send push and email notifications for task updates",
+      "acceptanceCriteria": [
+        "Users receive email when assigned a task",
+        "Users receive push notification on status changes",
+        "Notification preferences are configurable"
+      ],
+      "storyPoints": 8,
+      "priority": 3,
+      "domain": "backend",
+      "passes": false,
+      "dependencies": ["MYAPP-001", "MYAPP-002"]
+    }
+  ]
+}
