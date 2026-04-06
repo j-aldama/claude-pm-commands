@@ -1,8 +1,8 @@
 # claude-pm-commands
 
-Claude Code custom commands for project management automation with [Plane](https://plane.so).
+Claude Code custom commands for project management and QA automation.
 
-Turn quotes and specs into structured backlogs, validate PRDs against your board, and audit scope coverage — all from the terminal.
+Turn quotes and specs into structured backlogs, validate PRDs against your board, audit scope coverage, and generate acceptance test protocols — all from the terminal.
 
 ## Commands
 
@@ -55,6 +55,23 @@ Validates a `prd.json` file against existing Plane issues.
 /validar-prd My Project Name
 ```
 
+### `/acceptance-checklist`
+
+Generates a comprehensive acceptance testing protocol from codebase analysis.
+
+**What it does:**
+- Reads project documentation (CLAUDE.md, README, PRD)
+- Scans all endpoints, services, models, and existing tests
+- Classifies what's covered by automated tests vs needs manual testing
+- Generates a checklist with checkboxes, prerequisites, concrete test data, negative tests
+- Produces a `protocolo-pruebas-aceptacion.md` ready for manual QA execution
+
+**Usage:**
+```
+/acceptance-checklist
+/acceptance-checklist QA/pruebas-v2.md
+```
+
 ## Setup
 
 ### Prerequisites
@@ -97,7 +114,7 @@ These commands use `mcp__plane-admin` tools. Add the Plane MCP server to your Cl
 
 ## Workflow
 
-These three commands form a complete project management cycle:
+These four commands form a complete project management cycle:
 
 ```
 Quote/Spec docs ──► /cotizacion-to-backlog ──► Backlog in Plane
@@ -105,11 +122,14 @@ Quote/Spec docs ──► /cotizacion-to-backlog ──► Backlog in Plane
 PRD (prd.json) ───► /validar-prd ─────────────► Sync check
                                                       │
 Codebase ─────────► /audit-scope ─────────────► Coverage report
+                                                      │
+Codebase ─────────► /acceptance-checklist ────► QA test protocol
 ```
 
 1. **Start**: Use `/cotizacion-to-backlog` to create the initial backlog from client quotes
 2. **Validate**: Use `/validar-prd` to ensure PRD and Plane stay in sync
 3. **Audit**: Use `/audit-scope` to verify code coverage against the spec
+4. **Test**: Use `/acceptance-checklist` to generate manual QA protocols before delivery
 
 ## Examples
 
