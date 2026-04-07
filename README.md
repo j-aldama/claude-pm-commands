@@ -1,8 +1,8 @@
 # claude-pm-commands
 
-Claude Code custom commands for project management and QA automation.
+Claude Code custom commands for project management, QA automation, and test generation.
 
-Turn quotes and specs into structured backlogs, validate PRDs against your board, audit scope coverage, and generate acceptance test protocols — all from the terminal.
+Turn quotes and specs into structured backlogs, validate PRDs against your board, audit scope coverage, generate acceptance test protocols, and auto-generate backend + frontend tests — all from the terminal.
 
 ## Commands
 
@@ -72,6 +72,27 @@ Generates a comprehensive acceptance testing protocol from codebase analysis.
 /acceptance-checklist QA/pruebas-v2.md
 ```
 
+### `/e2e-gen`
+
+Generates automated tests for a feature, covering backend (pytest + httpx) and frontend (Playwright). Auto-detects the project stack and follows existing conventions.
+
+**What it does:**
+- Auto-detects backend (FastAPI/Django/Express) and frontend (Next/Astro/HTML) stack
+- Identifies relevant endpoints, components, and services for the feature
+- Plans coverage prioritizing error paths, validation, auth, and edge cases over happy paths
+- Sets up Playwright if not configured (with user confirmation)
+- Generates pytest tests for backend APIs and Playwright tests for UI flows
+- Runs both test suites and reports results
+- Reports any bugs found in the source code separately (does not hide them)
+
+**Usage:**
+```
+/e2e-gen "login y registro"
+/e2e-gen "dashboard alertas" --backend-only
+/e2e-gen "checkout flow" --frontend-only
+/e2e-gen "captura de pacientes" --no-run
+```
+
 ## Setup
 
 ### Prerequisites
@@ -114,7 +135,7 @@ These commands use `mcp__plane-admin` tools. Add the Plane MCP server to your Cl
 
 ## Workflow
 
-These four commands form a complete project management cycle:
+These five commands form a complete project management and QA cycle:
 
 ```
 Quote/Spec docs ──► /cotizacion-to-backlog ──► Backlog in Plane
@@ -123,13 +144,16 @@ PRD (prd.json) ───► /validar-prd ─────────────
                                                       │
 Codebase ─────────► /audit-scope ─────────────► Coverage report
                                                       │
-Codebase ─────────► /acceptance-checklist ────► QA test protocol
+Codebase ─────────► /e2e-gen ─────────────────► Backend + Playwright tests
+                                                      │
+Codebase ─────────► /acceptance-checklist ────► Manual QA protocol
 ```
 
 1. **Start**: Use `/cotizacion-to-backlog` to create the initial backlog from client quotes
 2. **Validate**: Use `/validar-prd` to ensure PRD and Plane stay in sync
 3. **Audit**: Use `/audit-scope` to verify code coverage against the spec
-4. **Test**: Use `/acceptance-checklist` to generate manual QA protocols before delivery
+4. **Auto-test**: Use `/e2e-gen` to generate backend + frontend tests for each feature
+5. **Manual test**: Use `/acceptance-checklist` to generate manual QA protocols before delivery
 
 ## Examples
 
