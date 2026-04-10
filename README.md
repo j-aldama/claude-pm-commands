@@ -72,6 +72,25 @@ Generates a comprehensive acceptance testing protocol from codebase analysis.
 /acceptance-checklist QA/pruebas-v2.md
 ```
 
+### `/checklist-cliente`
+
+Generates a clean, professional acceptance testing checklist for client delivery — ready to print as PDF and sign.
+
+**What it does:**
+- Looks for an existing technical protocol (`docs/protocolo-pruebas-aceptacion.md` or `docs/checklist.md`)
+- If found, transforms it by removing all technical sections (API routes, Docker, Redis, test results, E2E logs)
+- If not found, generates a checklist from scratch by analyzing the codebase
+- Simplifies technical jargon to client-friendly language
+- Adds signature fields and observation spaces formatted for print
+- Generates a PDF via `md-to-pdf`
+
+**Usage:**
+```
+/checklist-cliente
+/checklist-cliente docs/entrega-v2.md
+```
+
+
 ### `/e2e-gen`
 
 Generates automated tests for a feature, covering backend (pytest + httpx) and frontend (Playwright). Auto-detects the project stack and follows existing conventions.
@@ -135,7 +154,7 @@ These commands use `mcp__plane-admin` tools. Add the Plane MCP server to your Cl
 
 ## Workflow
 
-These five commands form a complete project management and QA cycle:
+These six commands form a complete project management and QA cycle:
 
 ```
 Quote/Spec docs ──► /cotizacion-to-backlog ──► Backlog in Plane
@@ -147,6 +166,8 @@ Codebase ─────────► /audit-scope ─────────
 Codebase ─────────► /e2e-gen ─────────────────► Backend + Playwright tests
                                                       │
 Codebase ─────────► /acceptance-checklist ────► Manual QA protocol
+                                                      │
+Protocol ─────────► /checklist-cliente ───────► Client-ready PDF
 ```
 
 1. **Start**: Use `/cotizacion-to-backlog` to create the initial backlog from client quotes
@@ -154,6 +175,7 @@ Codebase ─────────► /acceptance-checklist ────► Ma
 3. **Audit**: Use `/audit-scope` to verify code coverage against the spec
 4. **Auto-test**: Use `/e2e-gen` to generate backend + frontend tests for each feature
 5. **Manual test**: Use `/acceptance-checklist` to generate manual QA protocols before delivery
+6. **Client sign-off**: Use `/checklist-cliente` to generate a client-facing checklist PDF for signature
 
 ## Examples
 
