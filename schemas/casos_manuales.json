@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resumen", "casos"],
+  "properties": {
+    "resumen": {
+      "type": "string",
+      "description": "Qué flujos de usuario cubren los casos y qué queda fuera."
+    },
+    "casos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "titulo", "perfil", "camino", "precondiciones", "pasos", "datos", "automatizable", "razon_no_automatizable"],
+        "properties": {
+          "id": {"type": "string", "description": "M-01, M-02, ..."},
+          "titulo": {"type": "string"},
+          "perfil": {"type": "string", "description": "Rol del usuario que lo corre (admin, operador, invitado...)"},
+          "camino": {"type": "string", "enum": ["feliz", "error", "borde", "permiso"]},
+          "precondiciones": {"type": "string"},
+          "pasos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["accion", "esperado"],
+              "properties": {
+                "accion": {"type": "string", "description": "Lo que hace el usuario, en pantalla"},
+                "esperado": {"type": "string", "description": "Lo que debe ver, observable"}
+              }
+            }
+          },
+          "datos": {"type": "string", "description": "Datos sintéticos a usar; nunca credenciales ni datos reales"},
+          "automatizable": {"type": "boolean"},
+          "razon_no_automatizable": {"type": "string", "description": "Vacío si es automatizable"}
+        }
+      }
+    }
+  }
+}

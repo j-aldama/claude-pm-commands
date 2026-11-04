@@ -1,0 +1,1 @@
+{"veredicto": "pasa", "resumen": "El plan cubre lo que promete.", "hallazgos": [], "evidencia": [{"comando": "python3 -m unittest -v", "resultado": "verde", "salida": "OK"}]}

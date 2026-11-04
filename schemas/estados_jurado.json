@@ -1,0 +1,122 @@
+{
+  "_doc": "Tabla de estados del jurado: la ÚNICA fuente de verdad para jurado.py siguiente, para /plan-auditado y para test_jurado.py. Si una regla cambia, cambia aquí.",
+  "max_rondas": 3,
+  "reintentos_json_invalido": 1,
+  "acciones": {
+    "mecanico_falla": "corregir-mecanico",
+    "fallo_tecnico": "escalar:fallo-tecnico",
+    "json_invalido_agotado": "escalar:json-invalido",
+    "registro_faltante": "escalar:registro",
+    "max_rondas": "escalar:max-rondas"
+  },
+  "codex": {
+    "pasa": "segundo-o-aprobado",
+    "necesita-trabajo": "corregir",
+    "reprueba": "escalar:codex-reprueba"
+  },
+  "segundo": {
+    "pasa": "aprobado",
+    "necesita-trabajo": "corregir",
+    "reprueba": "escalar:discrepan"
+  },
+  "filas": [
+    {
+      "situacion": "Falla precheck, matriz o pendientes",
+      "resultado": "No se llama a jueces; PENDIENTE bloqueante",
+      "consume_ronda": false,
+      "caso": {"mecanico_ok": false},
+      "esperado": "corregir-mecanico"
+    },
+    {
+      "situacion": "Codex falla técnicamente (rc ≠ 0, modelo rechazado, más de 20 min, salida vacía)",
+      "resultado": "Se detiene y se escala",
+      "consume_ronda": false,
+      "caso": {"codex_intentos": ["fallo-tecnico"]},
+      "esperado": "escalar:fallo-tecnico"
+    },
+    {
+      "situacion": "JSON inválido de un juez, primer intento",
+      "resultado": "Un reintento",
+      "consume_ronda": false,
+      "caso": {"codex_intentos": ["json-invalido"]},
+      "esperado": "llamar-codex"
+    },
+    {
+      "situacion": "JSON inválido de un juez, sigue inválido",
+      "resultado": "Se escala",
+      "consume_ronda": false,
+      "caso": {"codex_intentos": ["json-invalido", "json-invalido"]},
+      "esperado": "escalar:json-invalido"
+    },
+    {
+      "situacion": "Codex: necesita-trabajo",
+      "resultado": "Se corrige y hay nueva ronda; el segundo juez no se llama",
+      "consume_ronda": true,
+      "caso": {"con_advisor": true, "codex": "necesita-trabajo"},
+      "esperado": "corregir"
+    },
+    {
+      "situacion": "Codex: reprueba",
+      "resultado": "Se detiene y se escala",
+      "consume_ronda": false,
+      "caso": {"codex": "reprueba"},
+      "esperado": "escalar:codex-reprueba"
+    },
+    {
+      "situacion": "Codex: pasa · sin --con-advisor",
+      "resultado": "Aprobado",
+      "consume_ronda": false,
+      "caso": {"con_advisor": false, "codex": "pasa"},
+      "esperado": "aprobado"
+    },
+    {
+      "situacion": "Codex: pasa · con --con-advisor, falta el segundo",
+      "resultado": "Se llama al segundo juez",
+      "consume_ronda": false,
+      "caso": {"con_advisor": true, "codex": "pasa"},
+      "esperado": "llamar-segundo:advisor"
+    },
+    {
+      "situacion": "Codex: pasa · el segundo falla técnicamente",
+      "resultado": "Se detiene y se escala; no se aprueba sin segundo juez",
+      "consume_ronda": false,
+      "caso": {"con_advisor": true, "codex": "pasa", "segundo_intentos": ["fallo-tecnico"]},
+      "esperado": "escalar:fallo-tecnico"
+    },
+    {
+      "situacion": "Codex: pasa · segundo: pasa",
+      "resultado": "Aprobado",
+      "consume_ronda": false,
+      "caso": {"con_advisor": true, "codex": "pasa", "segundo": "pasa"},
+      "esperado": "aprobado"
+    },
+    {
+      "situacion": "Codex: pasa · segundo: necesita-trabajo",
+      "resultado": "Se corrige y hay nueva ronda, empezando por Codex",
+      "consume_ronda": true,
+      "caso": {"con_advisor": true, "codex": "pasa", "segundo": "necesita-trabajo"},
+      "esperado": "corregir"
+    },
+    {
+      "situacion": "Codex: pasa · segundo: reprueba",
+      "resultado": "Discrepan: se detiene y se escala",
+      "consume_ronda": false,
+      "caso": {"con_advisor": true, "codex": "pasa", "segundo": "reprueba"},
+      "esperado": "escalar:discrepan"
+    },
+    {
+      "situacion": "Falta un registro de la ronda",
+      "resultado": "escalar:registro",
+      "consume_ronda": false,
+      "caso": {"falta_plan": true, "codex": "pasa"},
+      "esperado": "escalar:registro"
+    },
+    {
+      "situacion": "Termina la 3.ª ronda sin aprobar",
+      "resultado": "Se detiene con la mejor versión y lo abierto",
+      "consume_ronda": false,
+      "caso": {"ronda": 3, "codex": "necesita-trabajo"},
+      "esperado": "escalar:max-rondas"
+    }
+  ]
+}

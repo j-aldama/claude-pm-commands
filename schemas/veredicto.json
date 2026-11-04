@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["veredicto", "resumen", "hallazgos", "evidencia"],
+  "properties": {
+    "veredicto": {
+      "type": "string",
+      "enum": ["pasa", "necesita-trabajo", "reprueba"],
+      "description": "pasa = se puede implementar o entregar tal cual; necesita-trabajo = arreglos acotados; reprueba = el enfoque está mal"
+    },
+    "resumen": {
+      "type": "string",
+      "description": "Una o dos frases: qué se juzgó y por qué ese veredicto."
+    },
+    "hallazgos": {
+      "type": "array",
+      "description": "Vacío si pasa sin observaciones. Cada hallazgo es accionable, no una opinión.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gravedad", "criterio", "que", "donde", "porque", "correccion"],
+        "properties": {
+          "gravedad": {"type": "string", "enum": ["grave", "medio", "menor"]},
+          "criterio": {"type": "string", "description": "ID de la rúbrica (C1..C9)"},
+          "que": {"type": "string", "description": "El defecto, en una frase"},
+          "donde": {"type": "string", "description": "Sección, D#, o archivo:línea real"},
+          "porque": {"type": "string", "description": "Qué se rompe en concreto"},
+          "correccion": {"type": "string", "description": "La corrección concreta"}
+        }
+      }
+    },
+    "evidencia": {
+      "type": "array",
+      "description": "Lo que se corrió de verdad. Un juez sin evidencia no es evidencia.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["comando", "resultado", "salida"],
+        "properties": {
+          "comando": {"type": "string", "description": "El comando tal cual, sin expandir variables"},
+          "resultado": {"type": "string", "enum": ["verde", "rojo", "no-corrio"]},
+          "salida": {"type": ["string", "null"], "description": "Las líneas que importan, recortadas"}
+        }
+      }
+    }
+  }
+}
