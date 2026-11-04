@@ -146,7 +146,7 @@ Wires coverage measurement with ratcheting thresholds and a GitHub Actions workf
 
 Generates a professional end-user manual for a web app: explores every screen, takes real screenshots with Playwright, documents each screen and action in plain language, produces an HTML for review and then a PDF.
 
-Requires [md-to-pdf-engine](https://github.com/j-aldama/md-to-pdf-engine) (see [Setup](#setup)). It uses the engine's `manual-usuario` and `ejecutiva-oscura` templates, which are **not yet in the published engine**.
+Requires [md-to-pdf-engine](https://github.com/j-aldama/md-to-pdf-engine) (see [Setup](#setup)). It uses the engine's `manual-usuario` and `ejecutiva-oscura` templates. Until they are merged into the engine's `main`, check out its `feature/manual-usuario-and-ejecutiva-oscura-templates` branch before running `npm run build`.
 
 **Usage:**
 ```
