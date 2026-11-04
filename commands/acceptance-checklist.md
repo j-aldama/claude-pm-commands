@@ -5,9 +5,26 @@ con checklist de pruebas de aceptacion manuales, listo para imprimir o compartir
 con el cliente.
 
 ## Argumentos
-- `$ARGUMENTS` — Opcional: ruta donde guardar el archivo generado.
-  Default: `docs/protocolo-pruebas-aceptacion.md`
-  Ejemplos: `docs/pruebas.md`, `QA/acceptance.md`
+- `$ARGUMENTS` — Opcional: **alcance** a cubrir (modulo, feature, lista de
+  modulos separados por coma) y/o flags. Si esta vacio, cubre el proyecto
+  completo.
+  Ejemplos:
+  - `/acceptance-checklist`
+  - `/acceptance-checklist "facturacion, pagos, auth"`
+  - `/acceptance-checklist "facturacion, pagos" --separado`
+  - `/acceptance-checklist --out QA/acceptance.md`
+
+**Compatibilidad con el uso anterior**: si `$ARGUMENTS` es una sola cosa que
+**parece una ruta de archivo** (termina en `.md` o contiene `/`), se interpreta
+como ruta de salida, igual que antes — no como alcance.
+
+### Flags
+- `--out <ruta>` — ruta o carpeta de salida
+  (default: `docs/protocolo-pruebas-aceptacion.md`)
+- `--separado` — alcance multi-modulo: genera un documento **por modulo**
+  (salta la pregunta del Paso 2.5)
+- `--mezclado` — alcance multi-modulo: genera **un solo documento** con todos los
+  modulos como partes (salta la pregunta del Paso 2.5)
 
 ## Instrucciones
 
@@ -49,6 +66,70 @@ Analiza el codebase sistematicamente:
    con tests automatizados y que NO (esto determina que necesita prueba manual)
 5. **Configuracion**: Identifica servicios externos, env vars, Docker, etc.
 
+**Si hay alcance acotado**, limita el escaneo a las carpetas/modulos que
+correspondan mas sus dependencias directas. Si el alcance esta vacio, escanea
+todo el proyecto.
+
+---
+
+### Paso 2.5: Modo de generacion (solo si el alcance abarca mas de un modulo)
+
+**Cuando se activa.** Solo si el Paso 2 identifico **dos o mas modulos / areas
+funcionales distintas**. Si todo cae en un solo modulo, salta al Paso 3 sin
+preguntar.
+
+Un "modulo" es un area funcional con su propio router/servicio/pantallas
+(`invoices`, `payments`, `auth`), no una capa ni un archivo suelto. Un flujo que
+cruza modulos pero es **un solo recorrido de usuario** (checkout tocando `cart`,
+`payments` y `orders`) NO cuenta como multi-modulo.
+
+**Si se paso `--separado` o `--mezclado`**, usar ese modo e informarlo en una
+linea — no preguntar.
+
+**Si no**, DEBES preguntar y **esperar la respuesta**:
+
+```
+El proyecto tiene 3 modulos con flujos probables: facturacion, pagos, auth.
+
+¿Como genero el protocolo?
+
+  [1] Separado — un documento por modulo:
+        docs/protocolo-pruebas-aceptacion-facturacion.md
+        docs/protocolo-pruebas-aceptacion-pagos.md
+        docs/protocolo-pruebas-aceptacion-auth.md
+      Sirve si entregas o apruebas modulo por modulo (entregas escalonadas).
+      Cada uno se firma y se cierra por separado.
+
+  [2] Mezclado (recomendado si es una sola entrega) — un documento con los
+      3 modulos como PARTE 1 / PARTE 2 / PARTE 3:
+        docs/protocolo-pruebas-aceptacion.md
+      Una sola tabla de resumen y una sola aprobacion al final.
+
+¿Separado o mezclado? (1/2)
+```
+
+**Como cambia cada modo:**
+
+| Paso | `--separado` | `--mezclado` |
+|---|---|---|
+| Paso 3-4 | Escenarios y cobertura calculados **por modulo** | Todo junto |
+| Paso 5 | Un archivo por modulo: `<base>-<modulo>.md`, cada uno con su propia tabla de resumen y su bloque de firma | Un archivo con `PARTE N` por modulo |
+| Paso 6 | Tabla con una fila por modulo + ruta de cada archivo | Un bloque |
+
+**Default si el usuario no contesta claro: `mezclado`.** Un protocolo de
+aceptacion se lee y se aprueba mejor completo; separar solo tiene sentido si la
+entrega es escalonada. (Es el criterio inverso a `/e2e-gen`, donde separar es lo
+reversible — aca lo caro es fragmentar una aprobacion que deberia ser una sola.)
+
+**Regla anti-explosion.** Si el alcance supera **8 modulos** en modo separado,
+avisar y proponer agrupar por area de negocio o acotar el alcance. Nunca generar
+15 documentos de firma sin avisar.
+
+**Coherencia con `/checklist-cliente`.** El modo elegido aca **determina** lo que
+ese comando puede producir despues: si generas separado, el de cliente sale
+separado; si generas mezclado, sale un solo documento. Dilo en el resumen del
+Paso 6 para que quede claro antes de armar la entrega al cliente.
+
 ---
 
 ### Paso 3: Clasificar escenarios de prueba
@@ -88,9 +169,22 @@ Revisa los tests existentes del proyecto:
 ### Paso 5: Generar el protocolo
 
 Determina la ruta del archivo:
-- Si `$ARGUMENTS` tiene valor, usa esa ruta
-- Si no, usa `docs/protocolo-pruebas-aceptacion.md`
+- Si se paso `--out` (o `$ARGUMENTS` era una ruta), usa esa ruta como **base**
+- Si no, usa `docs/protocolo-pruebas-aceptacion.md` como base
 - Crea los directorios necesarios si no existen
+
+**En modo `--separado`**, la ruta base se sufija con el modulo, derivando el
+slug en minusculas, sin acentos ni `ñ`, espacios y `/` a guiones:
+`docs/protocolo-pruebas-aceptacion.md` → `docs/protocolo-pruebas-aceptacion-<modulo>.md`
+
+Cada archivo lleva la estructura completa de abajo (encabezado, instrucciones,
+partes, resumen y firma) acotada **solo a su modulo** — tiene que servir suelto,
+sin los otros. **Nunca sobrescribas** un archivo existente de otro alcance: si ya
+existe, genera `<base>-<modulo>-YYYYMMDD-HHMMSS.md` y avisalo en el Paso 6.
+
+Genera los modulos **de uno en uno, en orden de riesgo** (dinero, datos
+personales, permisos, borrados irreversibles primero): si algo se corta a la
+mitad, lo generado queda completo y utilizable.
 
 Genera el archivo con esta estructura exacta:
 
@@ -177,12 +271,41 @@ Muestra al usuario:
 2. **Escenarios por modulo** (tabla resumen)
 3. **Areas que requieren prueba manual obligatoria** (no cubiertas por tests)
 4. **Ruta del archivo** generado
+5. **Modo usado** (`separado` / `mezclado` / modulo unico) y, si fue separado,
+   la ruta de cada documento
+
+En modo separado, el resumen va con una fila por modulo:
+
+```
+Protocolo generado (modo: separado, 3 modulos)
+
+| Modulo      | Escenarios | Negativas | Manual obligatoria | Archivo                                        |
+|-------------|-----------|-----------|--------------------|------------------------------------------------|
+| facturacion | 18        | 7         | 3                  | docs/protocolo-pruebas-aceptacion-facturacion.md |
+| pagos       | 14        | 6         | 5                  | docs/protocolo-pruebas-aceptacion-pagos.md       |
+| auth        | 16        | 8         | 2                  | docs/protocolo-pruebas-aceptacion-auth.md        |
+
+Total: 48 escenarios · 21 negativas · 10 requieren prueba manual obligatoria
+
+Siguiente paso: /checklist-cliente --separado
+(el modo separado se mantiene: van a salir 3 documentos de cliente, uno por modulo)
+```
 
 ---
 
 ## Reglas
 
 - NUNCA inventar funcionalidad — solo generar pruebas para lo que existe en el codigo
+- **SIEMPRE preguntar separado vs mezclado (Paso 2.5)** cuando el alcance abarca
+  2 o mas modulos y no se paso `--separado` ni `--mezclado` — NUNCA elegir el
+  modo en silencio. Si el usuario no define, el default es `mezclado`
+- **En modo separado, cada documento debe servir suelto**: encabezado, requisitos
+  previos, escenarios, resumen y firma propios. Nunca un archivo que dependa de
+  leer los otros para tener sentido
+- **NUNCA sobrescribir** un protocolo existente de otro alcance — sufijar con
+  timestamp y avisarlo
+- **SIEMPRE informar el modo usado en el resumen**, porque condiciona lo que
+  `/checklist-cliente` puede generar despues
 - NUNCA generar pruebas genericas — cada paso debe tener datos concretos y resultados esperados
 - Si el proyecto tiene tests automatizados, analizarlos y documentar que cubren
 - Incluir SIEMPRE pruebas negativas (permisos, validaciones, errores)
