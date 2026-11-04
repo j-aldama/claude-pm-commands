@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resumen", "casos", "no_aplica"],
+  "properties": {
+    "resumen": {
+      "type": "string",
+      "description": "Una o dos frases: qué huecos tiene la suite frente a lo implementado."
+    },
+    "casos": {
+      "type": "array",
+      "description": "Pruebas que faltan. Cada una ejecutable y con lo que protege.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "tipo", "camino", "que_prueba", "entrada", "esperado", "archivo", "protege", "por_que_falta"],
+        "properties": {
+          "id": {"type": "string", "description": "T-01, T-02, ..."},
+          "tipo": {
+            "type": "string",
+            "enum": ["unitaria", "integracion", "e2e", "contrato", "seguridad", "regresion", "datos", "rendimiento", "concurrencia", "accesibilidad"]
+          },
+          "camino": {"type": "string", "enum": ["feliz", "error", "borde"]},
+          "que_prueba": {"type": "string", "description": "El comportamiento, en una frase"},
+          "entrada": {"type": "string", "description": "Datos o estado de arranque concretos (sintéticos)"},
+          "esperado": {"type": "string", "description": "Lo que debe pasar, observable y verificable"},
+          "archivo": {"type": "string", "description": "Archivo de prueba destino, relativo a la raíz del repo"},
+          "protege": {"type": "string", "description": "D# del plan o archivo:línea de producción que se rompe si la prueba falla"},
+          "por_que_falta": {"type": "string", "description": "Por qué la suite actual no lo cubre"}
+        }
+      }
+    },
+    "no_aplica": {
+      "type": "array",
+      "description": "Tipos sin casos, cada uno con la razón concreta.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tipo", "razon"],
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": ["unitaria", "integracion", "e2e", "contrato", "seguridad", "regresion", "datos", "rendimiento", "concurrencia", "accesibilidad"]
+          },
+          "razon": {"type": "string"}
+        }
+      }
+    }
+  }
+}

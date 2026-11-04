@@ -1,0 +1,57 @@
+<!doctype html><html lang='es'><head><meta charset='utf-8'><title>Plan — Canario con citas rotas</title><style>
+:root{--bg:#f7f8fa;--fg:#13182a;--muted:#5b6478;--line:#d9dde6;--head:#13182a;--headfg:#fff;--code:#eef1f6;--accent:#4b78ba}
+@media (prefers-color-scheme:dark){:root{--bg:#10141f;--fg:#e6e9f0;--muted:#9aa3b5;--line:#2a3142;--head:#1d2436;--headfg:#e6e9f0;--code:#1b2130;--accent:#7fa3db}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+main{max-width:1280px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 8px}
+h3{font-size:15px;margin:22px 0 8px}
+h2{font-size:17px;margin:28px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--accent)}
+p{margin:6px 0 12px;color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{background:var(--head);color:var(--headfg);text-align:left;font-weight:600;padding:8px 10px;white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{white-space:nowrap;font-weight:600}
+tr:nth-child(even) td{background:rgba(75,120,186,.05)}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-word}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0;word-break:normal}
+@media print{body{background:#fff;color:#000}main{max-width:none;padding:0}.tw{overflow:visible;border:none}table{min-width:0;font-size:11px}th{background:#13182a!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{page-break-inside:avoid}}
+</style></head><body><main>
+<h1>Plan — Canario con citas rotas</h1><p>Plane: canario · Base: <code>repo_canario</code> (fixture) · Raíces: <code>repo_canario</code> · Evidencia: <code>total([10, -5])</code> devuelve 5.0 hoy · Revisión: canario del jurado</p>
+<h2>1. Qué resuelve</h2><div class='tw'><table><tr><th>Pregunta</th><th>Hoy</th><th>En este plan</th><th>En simple</th></tr>
+<tr><td>¿<code>total()</code> acepta precios negativos?</td><td>Sí: los suma sin avisar (<code>app/calculo.py:999</code>)</td><td>Los rechaza con <code>ValueError</code> (D1)</td><td>La cita apunta a una línea que no existe.</td></tr>
+</table></div>
+<h2>2. Decisiones</h2><div class='tw'><table><tr><th>#</th><th>Decisión</th><th>Por qué</th><th>En simple</th></tr>
+<tr><td>D1</td><td><code>total()</code> rechaza negativos (<code>app/no_existe.py:3</code>)</td><td>Total falso</td><td>Se rechazan.</td></tr>
+</table></div>
+<h2>3. Entregas</h2><p>Una sola entrega: el cambio es pequeño y se prueba completo.</p><div class='tw'><table><tr><th>Entrega</th><th>Incluye</th><th>Por qué va junto</th><th>En simple</th></tr>
+<tr><td>E1</td><td>D1</td><td>Es un solo cambio</td><td>Todo de una vez.</td></tr>
+</table></div>
+<h2>4. Archivos</h2><div class='tw'><table><tr><th>Archivo</th><th>Cambio</th><th>En simple</th><th>Entrega</th></tr>
+<tr><td><code>app/calculo.py</code></td><td>Valida los precios antes de sumar</td><td>La función rechaza negativos.</td><td>E1</td></tr>
+<tr><td><code>tests/test_calculo.py</code></td><td>Agrega las pruebas de la sección 5</td><td>Las pruebas del cambio.</td><td>E1</td></tr>
+</table></div>
+<h2>5. Pruebas</h2><div class='tw'><table><tr><th>Archivo</th><th>Casos</th><th>Protege</th><th>En simple</th></tr>
+<tr><td><code>tests/test_calculo.py</code></td><td><code>test_total_rechaza_negativos</code></td><td>D1</td><td>Se rechazan.</td></tr>
+</table></div>
+<h3>Matriz de tipos de este plan</h3><div class='tw'><table><tr><th>Tipo</th><th>Aplica</th><th>Dónde</th><th>En simple</th></tr>
+<tr><td>Unitarias</td><td>Sí</td><td><code>tests/test_calculo.py</code></td><td>La función por separado.</td></tr>
+<tr><td>Integración</td><td>No aplica porque <code>total()</code> es una función pura sin dependencias</td><td>—</td><td>No hay piezas que juntar.</td></tr>
+<tr><td>E2E</td><td>No aplica porque no hay interfaz ni flujo de usuario</td><td>—</td><td>No hay pantalla.</td></tr>
+<tr><td>Rutas de error</td><td>Sí</td><td><code>test_total_rechaza_negativos</code> y el descuento fuera de rango ya probado</td><td>Los errores se prueban.</td></tr>
+<tr><td>Regresión del bug</td><td>Sí</td><td><code>test_total_rechaza_negativos</code>: hoy falla porque <code>total([10, -5])</code> devuelve 5.0</td><td>La prueba falla hoy y pasa después.</td></tr>
+<tr><td>Seguridad</td><td>No aplica porque no hay entrada externa, red ni permisos</td><td>—</td><td>No hay superficie de ataque.</td></tr>
+<tr><td>Contrato</td><td>Sí</td><td>El tipo de excepción y su mensaje en <code>test_total_rechaza_negativos</code></td><td>Quien llama sabe qué error esperar.</td></tr>
+<tr><td>Migración/datos</td><td>No aplica porque no hay datos guardados</td><td>—</td><td>No hay datos que mover.</td></tr>
+<tr><td>Rendimiento</td><td>No aplica porque es una suma de una lista en memoria</td><td>—</td><td>No hay volumen.</td></tr>
+</table></div>
+<h2>6. Verificación</h2><pre><code># Automática — la corre Codex en la copia
+python3 -m unittest discover -s tests -t . -v
+
+# Manual — no hay pasos manuales</code></pre><p>Compuerta: la suite completa en verde.</p>
+<h2>7. Riesgos</h2><div class='tw'><table><tr><th>Riesgo</th><th>Consecuencia</th><th>Mitigación</th><th>En simple</th></tr>
+<tr><td>Un llamador que hoy pase negativos a propósito</td><td>Empieza a recibir <code>ValueError</code></td><td>En el repo no hay otro llamador de <code>total()</code> fuera de las pruebas; se busca con <code>grep -rn "total(" app tests</code> antes de implementar</td><td>Se comprueba que nadie dependa del comportamiento viejo.</td></tr>
+</table></div>
+</main></body></html>

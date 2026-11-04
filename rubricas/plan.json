@@ -1,0 +1,59 @@
+{
+  "_doc": "Rúbrica con la que el jurado califica un plan de implementación. Cada hallazgo cita el ID de su criterio. C8 (formato) no lo califica el juez.",
+  "criterios": [
+    {
+      "id": "C1",
+      "exige": "Cada problema que el plan dice resolver tiene una decisión que lo cierra, y cada file:line citado dice lo que el plan afirma",
+      "como_se_verifica": "Abrir cada archivo:línea citado (jurado.py precheck ya comprobó que existen) y confirmar que el contenido respalda la afirmación; cruzar la tabla de contexto contra las decisiones",
+      "obligatorio": true
+    },
+    {
+      "id": "C2",
+      "exige": "Cada decisión la protege al menos una prueba que fallaría si la decisión no se implementa",
+      "como_se_verifica": "Para cada D#, buscarlo en la columna Protege y comprobar que el caso descrito ejercita exactamente lo que la decisión promete, no un vecino",
+      "obligatorio": true
+    },
+    {
+      "id": "C3",
+      "exige": "La matriz de tipos de prueba está completa y cada «no aplica» trae una razón válida; hay pruebas de rutas de error, no solo del camino feliz",
+      "como_se_verifica": "Revisar los nueve tipos (jurado.py matriz ya comprobó la forma) y juzgar si cada razón de «no aplica» es cierta",
+      "obligatorio": true
+    },
+    {
+      "id": "C4",
+      "exige": "Si corrige un bug, hay una prueba de regresión que falla hoy y pasa después del cambio",
+      "como_se_verifica": "Buscar la prueba de regresión y confirmar que su escenario reproduce el bug con el código actual",
+      "obligatorio": true
+    },
+    {
+      "id": "C5",
+      "exige": "La verificación son comandos que de verdad corren: banderas existentes, rutas correctas, bloque Automática relativo a $CLAUDE_HOME",
+      "como_se_verifica": "Consultar --help de las herramientas citadas y comprobar rutas; los comandos manuales están marcados como tales",
+      "obligatorio": true
+    },
+    {
+      "id": "C6",
+      "exige": "Nada inventado: lo que no viene del código o del contexto está declarado como PENDIENTE: <qué> — <quién> [— se cierra en E#]",
+      "como_se_verifica": "Rastrear cada afirmación sobre el comportamiento de una herramienta o un dato hasta su fuente; lo que no tiene fuente es hallazgo",
+      "obligatorio": true
+    },
+    {
+      "id": "C7",
+      "exige": "Cada riesgo trae una mitigación real, no una intención",
+      "como_se_verifica": "Para cada riesgo, la mitigación es un mecanismo o una prueba concreta del plan",
+      "obligatorio": true
+    },
+    {
+      "id": "C8",
+      "exige": "Formato canónico de Juan: tablas, columna En simple, secciones en orden",
+      "como_se_verifica": "Fuera del jurado: lo cuida el autor contra la referencia de formato de planes; el juez no lo califica",
+      "obligatorio": false
+    },
+    {
+      "id": "C9",
+      "exige": "Diseño correcto: sin contradicciones entre decisiones, sin rutas que se salten o degraden en silencio, sin choque con CLAUDE.md",
+      "como_se_verifica": "Recorrer las costuras entre decisiones (dónde el resultado de una es la entrada de otra) y los caminos de error de cada una; contrastar con ~/.claude/CLAUDE.md",
+      "obligatorio": true
+    }
+  ]
+}

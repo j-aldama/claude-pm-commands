@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identificador",
+    "resumen",
+    "casos"
+  ],
+  "properties": {
+    "identificador": {
+      "type": "string",
+      "description": "El identificador de la vuelta, copiado tal cual del prompt"
+    },
+    "resumen": {
+      "type": "string",
+      "description": "Una o dos frases: cuántos casos se revisaron y qué se encontró."
+    },
+    "casos": {
+      "type": "array",
+      "description": "Un dictamen por cada caso a revisar de la vuelta, sin saltarse ninguno.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "caso",
+          "reportado",
+          "dictamen",
+          "paso",
+          "porque",
+          "correccion"
+        ],
+        "properties": {
+          "caso": {
+            "type": "string",
+            "description": "ID del caso (M-01...)"
+          },
+          "reportado": {
+            "type": "string",
+            "enum": [
+              "pasa",
+              "falla",
+              "sin-estado"
+            ]
+          },
+          "dictamen": {
+            "type": "string",
+            "enum": [
+              "correcto",
+              "falso-positivo",
+              "falso-negativo",
+              "asercion-debil",
+              "inconcluso"
+            ],
+            "description": "falso-positivo = reporta pasa pero la captura o los logs muestran que el comportamiento está mal; falso-negativo = reporta falla pero el comportamiento es correcto (selector, espera o dato de la prueba); asercion-debil = pasa sin comprobar lo que dice el esperado; inconcluso = la evidencia no alcanza para decidir"
+          },
+          "paso": {
+            "type": "string",
+            "description": "Número del paso donde se ve, o vacío si es del caso entero"
+          },
+          "porque": {
+            "type": "string",
+            "description": "Qué se ve en la captura o en los logs que lo sostiene"
+          },
+          "correccion": {
+            "type": "string",
+            "description": "Qué cambiar; vacío si es correcto"
+          }
+        }
+      }
+    }
+  }
+}

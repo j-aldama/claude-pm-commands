@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang='es'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Plan — Nombre del plan</title>
+<!--
+Plantilla del formato de planes que usa /plan-auditado.
+Copia este archivo, reemplaza cada «<…>» y borra las filas de ejemplo.
+Reglas:
+- Todo va en tablas dentro de <div class='tw'>, y cada tabla termina con la columna «En simple» (español llano, una o dos frases).
+- Cada cita es <code>archivo:línea</code> o <code>archivo:inicio–fin</code>, relativa a una de las «Raíces» de la línea de metadatos.
+- Lo que no se sabe va como «PENDIENTE: qué — quién — se cierra en E#».
+- El bloque de estilos no se cambia.
+-->
+<style>
+:root{--bg:#f7f8fa;--fg:#13182a;--muted:#5b6478;--line:#d9dde6;--head:#13182a;--headfg:#fff;--code:#eef1f6;--accent:#4b78ba}
+@media (prefers-color-scheme:dark){:root{--bg:#10141f;--fg:#e6e9f0;--muted:#9aa3b5;--line:#2a3142;--head:#1d2436;--headfg:#e6e9f0;--code:#1b2130;--accent:#7fa3db}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+main{max-width:1280px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 8px}
+h3{font-size:15px;margin:22px 0 8px}
+h2{font-size:17px;margin:28px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--accent)}
+p{margin:6px 0 12px;color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{background:var(--head);color:var(--headfg);text-align:left;font-weight:600;padding:8px 10px;white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{white-space:nowrap;font-weight:600}
+tr:nth-child(even) td{background:rgba(75,120,186,.05)}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-word}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0;word-break:normal}
+@media print{body{background:#fff;color:#000}main{max-width:none;padding:0}.tw{overflow:visible;border:none}table{min-width:0;font-size:11px}th{background:#13182a!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<h1>Plan — Nombre del plan</h1>
+<p>Ticket: &lt;id&gt; · Base: <code>&lt;rama&gt;</code> @ <code>&lt;commit corto&gt;</code> · Raíces: <code>&lt;ruta del repo&gt;</code> · Evidencia: &lt;medición con número y fecha&gt; · Revisión: &lt;estado&gt;</p>
+
+<h2>1. Qué resuelve</h2>
+<div class='tw'><table>
+<tr><th>Pregunta</th><th>Hoy</th><th>En este plan</th><th>En simple</th></tr>
+<tr><td>&lt;la pregunta del cliente o el problema&gt;</td><td>&lt;qué pasa hoy, con su cita&gt;</td><td>&lt;qué cambia (D#)&gt;</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+
+<h2>2. Decisiones</h2>
+<div class='tw'><table>
+<tr><th>#</th><th>Decisión</th><th>Por qué</th><th>En simple</th></tr>
+<tr><td>D1</td><td>&lt;qué se decide, con su cita&gt;</td><td>&lt;evidencia o razón&gt;</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+
+<h2>3. Entregas</h2>
+<p>&lt;La regla para partir el trabajo en entregas&gt;</p>
+<div class='tw'><table>
+<tr><th>Entrega</th><th>Incluye</th><th>Por qué va junto</th><th>En simple</th></tr>
+<tr><td>E1</td><td>&lt;D# que entran&gt;</td><td>&lt;razón&gt;</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+
+<h2>4. Archivos</h2>
+<div class='tw'><table>
+<tr><th>Archivo</th><th>Cambio</th><th>En simple</th><th>Entrega</th></tr>
+<tr><td><code>&lt;ruta&gt;</code></td><td>&lt;qué cambia&gt;</td><td>&lt;explicación llana&gt;</td><td>E1</td></tr>
+</table></div>
+
+<h2>5. Pruebas</h2>
+<div class='tw'><table>
+<tr><th>Archivo</th><th>Casos</th><th>Protege</th><th>En simple</th></tr>
+<tr><td><code>&lt;ruta de la prueba&gt;</code></td><td>&lt;casos, no solo el camino feliz&gt;</td><td>D1</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+<h3>Pruebas agregadas por la auditoría</h3>
+<div class='tw'><table>
+<tr><th>Archivo de prueba</th><th>Caso</th><th>Protege</th><th>Tipo</th><th>En simple</th></tr>
+<tr><td><code>&lt;ruta&gt;</code></td><td>&lt;caso que pidió un revisor&gt;</td><td>D#</td><td>nueva</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+<h3>Matriz de tipos de este plan</h3>
+<div class='tw'><table>
+<tr><th>Tipo</th><th>Aplica</th><th>Dónde</th><th>En simple</th></tr>
+<tr><td>unitarias</td><td>Sí</td><td>&lt;archivo&gt;</td><td>&lt;…&gt;</td></tr>
+<tr><td>integración</td><td>Sí</td><td>&lt;archivo&gt;</td><td>&lt;…&gt;</td></tr>
+<tr><td>e2e</td><td>No aplica porque &lt;razón&gt;</td><td>—</td><td>&lt;…&gt;</td></tr>
+<tr><td>rutas de error</td><td>Sí</td><td>&lt;archivo&gt;</td><td>&lt;…&gt;</td></tr>
+<tr><td>regresión del bug</td><td>Sí</td><td>&lt;archivo&gt;</td><td>&lt;…&gt;</td></tr>
+<tr><td>seguridad</td><td>Sí</td><td>&lt;archivo&gt;</td><td>&lt;…&gt;</td></tr>
+<tr><td>contrato</td><td>No aplica porque &lt;razón&gt;</td><td>—</td><td>&lt;…&gt;</td></tr>
+<tr><td>migración/datos</td><td>No aplica porque &lt;razón&gt;</td><td>—</td><td>&lt;…&gt;</td></tr>
+<tr><td>rendimiento</td><td>No aplica porque &lt;razón&gt;</td><td>—</td><td>&lt;…&gt;</td></tr>
+</table></div>
+
+<h2>6. Verificación</h2>
+<pre><code># Automática — comandos relativos a la raíz del repo, sin rutas absolutas
+&lt;comando que corre todas las pruebas&gt;
+# Manual
+&lt;pasos que hace una persona&gt;</code></pre>
+<p>&lt;Compuertas: qué debe salir en verde antes de dar el plan por terminado, y la regla de revertir producción para ver fallar cada prueba nueva&gt;</p>
+
+<h2>7. Riesgos</h2>
+<div class='tw'><table>
+<tr><th>Riesgo</th><th>Consecuencia</th><th>Mitigación</th><th>En simple</th></tr>
+<tr><td>&lt;qué puede salir mal&gt;</td><td>&lt;qué se rompe&gt;</td><td>&lt;cómo se evita&gt;</td><td>&lt;explicación llana&gt;</td></tr>
+</table></div>
+</main>
+</body>
+</html>
