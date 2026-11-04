@@ -49,7 +49,7 @@ cd "$MD_PDF_ENGINE" && node dist/cli.js generate /ruta/archivo.md --size Letter 
 
 ## Plantillas
 
-La lista real la da `node "$MD_PDF_ENGINE/dist/cli.js" list-templates`. Las que trae el motor (`manual-usuario` y `ejecutiva-oscura` están en la rama `feature/manual-usuario-and-ejecutiva-oscura-templates` hasta que se integren a `main`):
+La lista real la da `node "$MD_PDF_ENGINE/dist/cli.js" list-templates`. Las que trae el motor:
 
 | ID | Nombre | Ideal para |
 |----|--------|-----------|

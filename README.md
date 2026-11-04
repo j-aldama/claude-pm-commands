@@ -62,55 +62,66 @@ Validates a `prd.json` file against existing Plane issues.
 Generates a comprehensive acceptance testing protocol from codebase analysis.
 
 **What it does:**
-- Reads project documentation (CLAUDE.md, README, PRD)
-- Scans all endpoints, services, models, and existing tests
+- Reads project documentation (CLAUDE.md, README, AGENTS.md, PRD)
+- Scans endpoints, services, models and existing tests, limited to the requested scope when one is given
 - Classifies what's covered by automated tests vs needs manual testing
-- Generates a checklist with checkboxes, prerequisites, concrete test data, negative tests
-- Produces a `protocolo-pruebas-aceptacion.md` ready for manual QA execution
+- Generates a checklist with checkboxes, prerequisites, concrete test data, negative tests and side-effect checks
+- When the scope spans two or more modules, asks whether to write one protocol per module (`--separado`) or a single protocol with one part per module (`--mezclado`, the default). That choice carries over to `/checklist-cliente`
+- Never overwrites a protocol from another scope: it adds a timestamp suffix instead
+- Produces `docs/protocolo-pruebas-aceptacion.md` (or one `-<module>.md` per module) ready for manual QA execution
 
 **Usage:**
 ```
 /acceptance-checklist
-/acceptance-checklist QA/pruebas-v2.md
+/acceptance-checklist "facturacion, pagos, auth"
+/acceptance-checklist "facturacion, pagos" --separado
+/acceptance-checklist --out QA/acceptance.md
 ```
+
+A single argument that looks like a path (ends in `.md` or contains `/`) is still read as the output path.
 
 ### `/checklist-cliente`
 
 Generates a clean, professional acceptance testing checklist for client delivery — ready to print as PDF and sign.
 
 **What it does:**
-- Looks for an existing technical protocol (`docs/protocolo-pruebas-aceptacion.md` or `docs/checklist.md`)
-- If found, transforms it by removing all technical sections (API routes, Docker, Redis, test results, E2E logs)
+- Looks for existing technical protocols (`docs/protocolo-pruebas-aceptacion.md`, one per module as `docs/protocolo-pruebas-aceptacion-*.md`, or `docs/checklist.md`)
+- If found, transforms them by removing all technical sections (API routes, Docker, Redis, test results, E2E logs)
 - If not found, generates a checklist from scratch by analyzing the codebase
-- Simplifies technical jargon to client-friendly language
-- Adds signature fields and observation spaces formatted for print
-- Generates a PDF via `md-to-pdf`
+- Keeps the split decided in `/acceptance-checklist`: one protocol per module gives one client document per module. With no previous decision and several modules, it asks; the default is one document per module, because a single signature blocks accepting every module when the client objects to one
+- One signature block per document, for the client only
+- Simplifies technical jargon to client-friendly language and leaves room for observations in print
+- Generates a PDF of each document via `npx md-to-pdf`
 
 **Usage:**
 ```
 /checklist-cliente
-/checklist-cliente docs/entrega-v2.md
+/checklist-cliente "facturacion, pagos"
+/checklist-cliente --separado
+/checklist-cliente --out entregables/aceptacion.md
 ```
-
 
 ### `/e2e-gen`
 
-Generates automated tests for a feature, covering backend (pytest + httpx) and frontend (Playwright). Auto-detects the project stack and follows existing conventions.
+Generates automated tests for a feature or a list of modules: backend API (pytest + httpx), frontend (Playwright) and, when the backend is an API, OpenAPI contract tests (Schemathesis) alongside the Playwright ones, not instead of them. Auto-detects the project stack and follows existing conventions.
 
 **What it does:**
-- Auto-detects backend (FastAPI/Django/Express) and frontend (Next/Astro/HTML) stack
+- Asks for the feature when none is given, listing the ones it finds in the PRD or the code; it never tests "the whole project"
+- Auto-detects the backend (FastAPI, Django, Flask, Express, Hono, Fastify, Next API routes) and the frontend (Next, Astro, Vite, React, Vue, HTML templates)
 - Identifies relevant endpoints, components, and services for the feature
+- For several modules, asks whether to write one set of test files per module (`--separado`, the default) or one set for all of them (`--mezclado`); above 6 modules it proposes starting with the riskiest ones
 - Plans coverage prioritizing error paths, validation, auth, and edge cases over happy paths
-- Sets up Playwright if not configured (with user confirmation)
-- Generates pytest tests for backend APIs and Playwright tests for UI flows
-- Runs both test suites and reports results
+- Builds test data with factories (`factory_boy`/`pytest-factoryboy`, `fishery`/`@faker-js/faker`) or from the OpenAPI schema instead of hardcoded values, mocks external services and isolates the database
+- Asks before installing anything (Playwright browsers, factories, Schemathesis, a schema generator) or creating `playwright.config`
+- Runs the suites and keeps only tests that pass and add real coverage (coverage-guided filter)
 - Reports any bugs found in the source code separately (does not hide them)
 
 **Usage:**
 ```
 /e2e-gen "login y registro"
 /e2e-gen "dashboard alertas" --backend-only
-/e2e-gen "checkout flow" --frontend-only
+/e2e-gen "checkout flow" --frontend-only --lang ts
+/e2e-gen "facturacion, pagos, auth" --separado
 /e2e-gen "captura de pacientes" --no-run
 ```
 
@@ -146,7 +157,7 @@ Wires coverage measurement with ratcheting thresholds and a GitHub Actions workf
 
 Generates a professional end-user manual for a web app: explores every screen, takes real screenshots with Playwright, documents each screen and action in plain language, produces an HTML for review and then a PDF.
 
-Requires [md-to-pdf-engine](https://github.com/j-aldama/md-to-pdf-engine) (see [Setup](#setup)). It uses the engine's `manual-usuario` and `ejecutiva-oscura` templates. Until they are merged into the engine's `main`, check out its `feature/manual-usuario-and-ejecutiva-oscura-templates` branch before running `npm run build`.
+Requires [md-to-pdf-engine](https://github.com/j-aldama/md-to-pdf-engine) (see [Setup](#setup)). It uses the engine's `manual-usuario` and `ejecutiva-oscura` templates.
 
 **Usage:**
 ```
@@ -212,6 +223,8 @@ Converts a Markdown file into a professional PDF with [md-to-pdf-engine](https:/
   - [Codex CLI](https://github.com/openai/codex) authenticated, with access to the pinned model `gpt-6.1-sol` (see `MODELO_CODEX` in `scripts/jurado.py`)
   - Docker, for the isolated validation (`scripts/valida_impl.py`). Build the image once: `docker build -t ejecutor-valida ~/.claude/scripts/ejecutor`
   - [GitHub CLI](https://cli.github.com) (`gh`) to open the PR, and Playwright in the target project for the evidence runs
+- For `/checklist-cliente`: Node.js, since it renders the PDF with `npx md-to-pdf`
+- For `/e2e-gen`: the target project's own test tooling. Playwright browsers, factories and Schemathesis are installed only after you confirm
 - For `generar-pdf` and `/guia-usuario`: [md-to-pdf-engine](https://github.com/j-aldama/md-to-pdf-engine) cloned and built, with its path in `MD_PDF_ENGINE`:
   ```bash
   git clone https://github.com/j-aldama/md-to-pdf-engine.git
